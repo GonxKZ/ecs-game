@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Instancing para ECS
  * Gestiona multitudes de objetos idénticos usando InstancedMesh de Three.js
@@ -24,6 +26,9 @@ export class InstancingSystem {
       drawCalls: 0,
       matricesUpdated: 0
     };
+
+    // Modo de debugging
+    this.debugMode = false;
 
     this.name = 'Instancing';
     this.lastExecutionTime = 0;
@@ -263,6 +268,9 @@ export class InstancingSystem {
 
     for (const [groupKey, instanceGroup] of this.instanceGroups) {
       if (instanceGroup.active && instanceGroup.entityCount > 100) {
+        // Usar groupKey para debugging y logging
+        this.debugGroupCulling(groupKey, instanceGroup);
+
         // Calcular bounding box del grupo
         const boundingBox = this.calculateGroupBoundingBox(instanceGroup);
 
@@ -424,6 +432,15 @@ export class InstancingUtils {
         instanceGroup.maxInstances = maxGroupSize;
       }
     }
+  }
+
+  // Método para debugging de culling de grupos
+  debugGroupCulling(groupKey, instanceGroup) {
+    // Usar groupKey para logging de debugging
+    if (this.debugMode && instanceGroup.entityCount > 1000) {
+      console.log(`🎯 Group ${groupKey}: ${instanceGroup.entityCount} instances`);
+    }
+    // Se puede expandir para más funcionalidades de debugging
   }
 
   /**

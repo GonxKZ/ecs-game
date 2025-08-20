@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Materiales PBR para ECS
  * Implementa estrategia PBR coherente con texturas comprimidas y gestión sRGB
@@ -194,7 +196,15 @@ export class PBRMaterialSystem {
       if (materialRef && animation && animation.isPlaying) {
         const material = this.getCachedMaterial(materialRef);
         if (material) {
-          // Ejemplo: animar metalness
+          // Usar deltaTime para hacer la animación frame-rate independiente
+          animation.currentTime += deltaTime * animation.speed;
+
+          // Reiniciar si es un loop
+          if (animation.loop && animation.currentTime >= animation.duration) {
+            animation.currentTime = animation.currentTime % animation.duration;
+          }
+
+          // Ejemplo: animar metalness basado en tiempo
           const time = animation.currentTime / animation.duration;
           material.metalness = Math.sin(time * Math.PI * 2) * 0.5 + 0.5;
           material.needsUpdate = true;

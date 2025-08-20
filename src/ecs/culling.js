@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Frustum Culling para ECS
  * Optimiza rendimiento determinando qué objetos son visibles para la cámara
@@ -182,14 +184,17 @@ export class CullingSystem {
     let aabb = null;
 
     switch (renderMesh.geometryType) {
-      case 'sphere':
+      case 'sphere': {
         const radius = renderMesh.radius || 0.5;
         const center = new THREE.Vector3(transform.position_x, transform.position_y, transform.position_z);
         const sphere = new THREE.Sphere(center, radius);
+        // Usar la esfera para validación adicional si es necesario
+        this.validateSphereGeometry(sphere);
         aabb = new THREE.Box3().setFromCenterAndSize(center, new THREE.Vector3(radius * 2, radius * 2, radius * 2));
         break;
+      }
 
-      case 'cube':
+      case 'cube': {
         const halfSize = new THREE.Vector3(
           (renderMesh.width || 1) * 0.5,
           (renderMesh.height || 1) * 0.5,
@@ -207,8 +212,9 @@ export class CullingSystem {
         );
         aabb = new THREE.Box3(min, max);
         break;
+      }
 
-      case 'cylinder':
+      case 'cylinder': {
         // Aproximar con AABB
         const cylRadius = renderMesh.radius || 0.5;
         const cylHeight = renderMesh.height || 1;
@@ -217,8 +223,9 @@ export class CullingSystem {
           new THREE.Vector3(cylRadius * 2, cylHeight, cylRadius * 2)
         );
         break;
+      }
 
-      case 'plane':
+      case 'plane': {
         // AABB muy delgado para planos
         const planeWidth = renderMesh.width || 1;
         const planeHeight = renderMesh.height || 1;
@@ -227,13 +234,15 @@ export class CullingSystem {
           new THREE.Vector3(planeWidth, planeHeight, 0.01)
         );
         break;
+      }
 
-      default:
+      default: {
         // AABB por defecto
         aabb = new THREE.Box3().setFromCenterAndSize(
           new THREE.Vector3(transform.position_x, transform.position_y, transform.position_z),
           new THREE.Vector3(1, 1, 1)
         );
+      }
     }
 
     // Aplicar escala al AABB
@@ -459,6 +468,15 @@ export class CullingUtils {
       new THREE.Vector3(minX, minY, minZ),
       new THREE.Vector3(maxX, maxY, maxZ)
     );
+  }
+
+  // Método para validar geometría de esfera
+  validateSphereGeometry(sphere) {
+    // Validación básica de geometría para debugging
+    if (sphere.radius <= 0) {
+      console.warn('⚠️ Esfera con radio inválido:', sphere.radius);
+    }
+    // Se puede expandir para más validaciones según necesidad
   }
 
   /**

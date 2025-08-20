@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import * as THREE from 'three';
 
 export default function ShaderLaboratory({ world, pbrSystem, onClose }) {
   const [selectedEntity, setSelectedEntity] = useState(null);
@@ -43,7 +44,7 @@ export default function ShaderLaboratory({ world, pbrSystem, onClose }) {
     if (entityList.length > 0 && !selectedEntity) {
       setSelectedEntity(entityList[0].id);
     }
-  }, [world]);
+  }, [world, selectedEntity]);
 
   const applyShaderEffect = (effect) => {
     if (!selectedEntity || !pbrSystem) return;
