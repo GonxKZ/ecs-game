@@ -4,6 +4,12 @@ export default function AccessibilityPanel({ accessibilitySystem, onClose }) {
   const [settings, setSettings] = useState({});
   const [isVisible, setIsVisible] = useState(true);
 
+  // Usar onClose para funcionalidad de cierre del panel
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
+
   // Actualizar configuración del sistema
   useEffect(() => {
     if (!accessibilitySystem) return;

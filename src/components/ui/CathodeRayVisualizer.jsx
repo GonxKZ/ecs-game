@@ -12,6 +12,12 @@ export default function CathodeRayVisualizer({ cathodeRaySystem, onClose }) {
     maxBoxes: 100
   });
 
+  // Usar onClose para funcionalidad de cierre
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
+
   // Actualizar estadísticas
   useEffect(() => {
     if (!cathodeRaySystem) return;

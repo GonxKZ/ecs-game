@@ -9,6 +9,12 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'entities', 'components'
 
+  // Usar onClose para funcionalidad de cierre
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
+
   // Actualizar datos del sistema
   useEffect(() => {
     if (!frameDiffSystem) return;
@@ -203,7 +209,7 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
             <div className="space-y-2">
               {filteredDiffs.addedEntities?.length > 0 && (
                 <div className="bg-gray-800/50 p-2 rounded">
-                  <div className="text-green-400 text-xs mb-1">➕ Añadidas ({filteredDiffs.addedEntities.length})</div>
+                  <div className={`${getChangeColor('added')} text-xs mb-1`}>{getChangeIcon('added')} Añadidas ({filteredDiffs.addedEntities.length})</div>
                   <div className="grid grid-cols-3 gap-1 text-xs">
                     {filteredDiffs.addedEntities.slice(0, 6).map(entityId => (
                       <div key={entityId} className="text-green-400 bg-green-900/30 px-2 py-1 rounded">
@@ -219,7 +225,7 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
 
               {filteredDiffs.removedEntities?.length > 0 && (
                 <div className="bg-gray-800/50 p-2 rounded">
-                  <div className="text-red-400 text-xs mb-1">➖ Removidas ({filteredDiffs.removedEntities.length})</div>
+                  <div className={`${getChangeColor('removed')} text-xs mb-1`}>{getChangeIcon('removed')} Removidas ({filteredDiffs.removedEntities.length})</div>
                   <div className="grid grid-cols-3 gap-1 text-xs">
                     {filteredDiffs.removedEntities.slice(0, 6).map(entityId => (
                       <div key={entityId} className="text-red-400 bg-red-900/30 px-2 py-1 rounded">
@@ -235,7 +241,7 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
 
               {filteredDiffs.modifiedEntities?.length > 0 && (
                 <div className="bg-gray-800/50 p-2 rounded">
-                  <div className="text-blue-400 text-xs mb-1">✏️ Modificadas ({filteredDiffs.modifiedEntities.length})</div>
+                  <div className={`${getChangeColor('modified')} text-xs mb-1`}>{getChangeIcon('modified')} Modificadas ({filteredDiffs.modifiedEntities.length})</div>
                   <div className="grid grid-cols-3 gap-1 text-xs">
                     {filteredDiffs.modifiedEntities.slice(0, 6).map(entityId => (
                       <div key={entityId} className="text-blue-400 bg-blue-900/30 px-2 py-1 rounded cursor-pointer"

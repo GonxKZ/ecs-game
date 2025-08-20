@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 
 export default function DeterministicRecorderUI({ recorder, onClose }) {
+  // Usar onClose para funcionalidad de cierre
+  const handleClose = () => {
+    if (onClose) onClose();
+  };
   const [isVisible, setIsVisible] = useState(true);
   const [state, setState] = useState({});
   const [stats, setStats] = useState({});
