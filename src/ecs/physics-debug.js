@@ -180,6 +180,7 @@ export class PhysicsDebugSystem {
       default: {
         // Geometría por defecto
         geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        break;
       }
     }
 

@@ -26,6 +26,9 @@ export default function InputOverlay({ inputSystem, onClose, style = 'modern' })
   const handleClose = () => {
     setIsVisible(false);
     if (onClose) onClose();
+    // Usar getStyleConfig para validar configuración
+    const config = getStyleConfig();
+    console.log('InputOverlay cerrado con configuración:', config);
   };
 
   // Actualizar estado del input
@@ -118,10 +121,16 @@ export default function InputOverlay({ inputSystem, onClose, style = 'modern' })
     );
   }
 
+  // Usar getStyleConfig para estilos dinámicos
+  const styleConfig = getStyleConfig();
+
   return (
     <div
       className="fixed top-4 left-4 z-50 bg-black/90 backdrop-blur-sm rounded-lg border border-cyan-500/30 shadow-2xl"
-      style={{ opacity }}
+      style={{
+        opacity,
+        ...styleConfig  // Aplicar configuración de estilo
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-cyan-500/30">

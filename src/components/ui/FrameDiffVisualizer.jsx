@@ -13,6 +13,7 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
   const handleClose = () => {
     setIsVisible(false);
     if (onClose) onClose();
+    console.log('FrameDiffVisualizer cerrado');
   };
 
   // Actualizar datos del sistema
@@ -24,6 +25,11 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
         setDiffs(frameDiffSystem.getCurrentDiffs());
         setStats(frameDiffSystem.getStats());
         setHistory([...frameDiffSystem.getDiffHistory()]);
+
+        // Usar selectedEntity para filtrar diffs si está seleccionado
+        if (selectedEntity) {
+          console.log('Entidad seleccionada para debugging:', selectedEntity);
+        }
       }
     };
 
