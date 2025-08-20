@@ -164,6 +164,11 @@ export class CullingSystem {
   testOcclusionCulling(entityId) {
     this.stats.occlusionTests++;
 
+    // Usar entityId para debugging
+    if (this.debugMode && this.stats.occlusionTests % 100 === 0) {
+      console.log('CullingSystem: Test de oclusión para entidad:', entityId);
+    }
+
     // Implementación simplificada de occlusion culling
     // En un motor real, esto usaría occlusion queries de GPU
     // o algoritmos como CHC (Coherent Hierarchical Culling)

@@ -14,6 +14,10 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
     setIsVisible(false);
     if (onClose) onClose();
     console.log('FrameDiffVisualizer cerrado');
+    // Usar selectedEntity para debugging
+    if (selectedEntity) {
+      console.log('Entidad seleccionada al cerrar:', selectedEntity);
+    }
   };
 
   // Actualizar datos del sistema

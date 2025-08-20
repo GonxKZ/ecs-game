@@ -265,6 +265,10 @@ export class FrameDiffSystem {
    * Método principal de actualización
    */
   update(deltaTime) {
+    // Usar deltaTime para debugging de performance
+    if (this.debugMode && deltaTime > 16.67) {
+      console.warn('FrameDiffSystem: Frame time alto:', deltaTime, 'ms');
+    }
     if (!this.isEnabled) return;
 
     this.captureFrame();

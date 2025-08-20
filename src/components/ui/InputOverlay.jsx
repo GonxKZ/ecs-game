@@ -29,6 +29,10 @@ export default function InputOverlay({ inputSystem, onClose, style = 'modern' })
     // Usar getStyleConfig para validar configuración
     const config = getStyleConfig();
     console.log('InputOverlay cerrado con configuración:', config);
+    // Usar styleConfig para debugging adicional
+    if (config.background) {
+      console.log('Background style aplicado:', config.background);
+    }
   };
 
   // Actualizar estado del input
