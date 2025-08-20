@@ -113,7 +113,7 @@ export default function DeterministicRecorderUI({ recorder, onClose }) {
         <h3 className="text-blue-400 font-bold text-lg">🎬 Deterministic Recorder</h3>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             className="text-gray-400 hover:text-white text-lg"
           >
             ×

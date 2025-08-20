@@ -67,7 +67,7 @@ export default function CathodeRayVisualizer({ cathodeRaySystem, onClose }) {
             {stats.isEnabled ? 'ON' : 'OFF'}
           </button>
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             className="text-gray-400 hover:text-white text-lg"
           >
             ×

@@ -8,6 +8,8 @@ export default function AccessibilityPanel({ accessibilitySystem, onClose }) {
   const handleClose = () => {
     setIsVisible(false);
     if (onClose) onClose();
+    // Logging para debugging
+    console.log('AccessibilityPanel cerrado');
   };
 
   // Actualizar configuración del sistema
@@ -68,7 +70,7 @@ export default function AccessibilityPanel({ accessibilitySystem, onClose }) {
         <h3 className="text-green-400 font-bold text-lg">♿ Panel de Accesibilidad</h3>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             className="text-gray-400 hover:text-white text-lg"
           >
             ×

@@ -10,6 +10,7 @@ export default function AudioXRayVisualizer({ audioXRaySystem, onClose }) {
   const handleClose = () => {
     setIsVisible(false);
     if (onClose) onClose();
+    console.log('AudioXRayVisualizer cerrado');
   };
 
   // Actualizar datos del sistema
@@ -101,7 +102,7 @@ export default function AudioXRayVisualizer({ audioXRaySystem, onClose }) {
             {stats.isEnabled ? 'ON' : 'OFF'}
           </button>
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             className="text-gray-400 hover:text-white text-lg"
           >
             ×
