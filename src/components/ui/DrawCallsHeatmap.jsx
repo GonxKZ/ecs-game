@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function DrawCallsHeatmap({ renderer, scene, onClose }) {
+  // Usar scene para obtener estadísticas adicionales
+  const getSceneStats = () => {
+    if (scene) {
+      return {
+        meshCount: scene.children.filter(child => child.isMesh).length,
+        lightCount: scene.children.filter(child => child.isLight).length,
+        totalObjects: scene.children.length
+      };
+    }
+    return { meshCount: 0, lightCount: 0, totalObjects: 0 };
+  };
+
   const [stats, setStats] = useState({
     drawCalls: 0,
     triangles: 0,
@@ -43,6 +55,7 @@ export default function DrawCallsHeatmap({ renderer, scene, onClose }) {
       const renderInfo = renderer.info.render;
       const memoryInfo = renderer.info.memory;
 
+      const sceneStats = getSceneStats();
       const newStats = {
         drawCalls: renderInfo.calls || 0,
         triangles: renderInfo.triangles || 0,
@@ -51,7 +64,10 @@ export default function DrawCallsHeatmap({ renderer, scene, onClose }) {
         geometries: memoryInfo.geometries || 0,
         textures: memoryInfo.textures || 0,
         shaders: renderInfo.programs || 0,
-        frameTime: renderer.info.render.frame || 0
+        frameTime: renderer.info.render.frame || 0,
+        meshCount: sceneStats.meshCount,
+        lightCount: sceneStats.lightCount,
+        totalObjects: sceneStats.totalObjects
       };
 
       setStats(newStats);

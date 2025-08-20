@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Física con Rapier para ECS
  * Proporciona simulación física realista manteniendo separación ECS/Three.js
@@ -162,7 +164,23 @@ export class RapierPhysicsSystem {
     return body;
   }
 
+  // Método para validar componente de rigid body
+  validateRigidBodyComponent(rigidBodyComponent) {
+    // Validación básica del componente
+    if (rigidBodyComponent) {
+      if (rigidBodyComponent.mass < 0) {
+        console.warn('⚠️ RigidBody con masa negativa:', rigidBodyComponent.mass);
+      }
+      if (rigidBodyComponent.friction < 0) {
+        console.warn('⚠️ RigidBody con fricción negativa:', rigidBodyComponent.friction);
+      }
+    }
+  }
+
   createCollidersForEntity(entityId, body, rigidBodyComponent) {
+    // Usar rigidBodyComponent para validación o configuración adicional
+    this.validateRigidBodyComponent(rigidBodyComponent);
+
     // Buscar componentes de collider
     const colliderEntities = this.world.queryEntities({
       components: ['Transform', 'Collider']

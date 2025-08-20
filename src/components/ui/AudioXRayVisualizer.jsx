@@ -6,6 +6,12 @@ export default function AudioXRayVisualizer({ audioXRaySystem, onClose }) {
   const [isVisible, setIsVisible] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
 
+  // Usar onClose para funcionalidad de cierre
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
+
   // Actualizar datos del sistema
   useEffect(() => {
     if (!audioXRaySystem) return;
