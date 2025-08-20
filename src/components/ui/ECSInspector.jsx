@@ -12,9 +12,22 @@ export default function ECSInspector({ world, onClose }) {
   const [isRecording, setIsRecording] = useState(false);
   const [frameHistory, setFrameHistory] = useState([]);
 
+  // Usar selectedSystem y selectedQuery para debugging
+  const debugSelectedItems = () => {
+    if (selectedSystem) {
+      console.log('Sistema seleccionado para debugging:', selectedSystem);
+    }
+    if (selectedQuery) {
+      console.log('Query seleccionada para debugging:', selectedQuery);
+    }
+  };
+
   // Actualizar datos del mundo
   useEffect(() => {
     if (!world) return;
+
+    // Llamar a debug cuando cambien las selecciones
+    debugSelectedItems();
 
     const updateWorldStats = () => {
       const stats = {

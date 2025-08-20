@@ -182,6 +182,8 @@ export class PhysicsDebugSystem {
         geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
         break;
       }
+      // Fin del switch
+      break;
     }
 
     if (geometry) {

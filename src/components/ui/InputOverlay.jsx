@@ -36,7 +36,11 @@ export default function InputOverlay({ inputSystem, onClose, style = 'modern' })
   };
 
   // Usar handleClose en el botón de cierre
-  const closeButton = () => handleClose();
+  const closeButton = () => {
+    handleClose();
+    // Logging adicional para debugging
+    console.log('Botón de cierre presionado en InputOverlay');
+  };
 
   // Actualizar estado del input
   useEffect(() => {

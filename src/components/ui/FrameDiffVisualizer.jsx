@@ -17,6 +17,8 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
     // Usar selectedEntity para debugging
     if (selectedEntity) {
       console.log('Entidad seleccionada al cerrar:', selectedEntity);
+      // Validación adicional de la entidad seleccionada
+      console.log('Estado de la entidad seleccionada:', { selectedEntity, isVisible });
     }
   };
 

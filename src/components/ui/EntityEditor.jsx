@@ -9,6 +9,16 @@ export default function EntityEditor({ world, onClose, onEntitySelect }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterByComponent, setFilterByComponent] = useState('');
 
+  // Usar availableComponents para logging y debugging
+  const debugAvailableComponents = () => {
+    if (availableComponents.length > 0) {
+      console.log('Componentes disponibles:', availableComponents);
+    }
+    if (isEditing) {
+      console.log('Modo de edición activado en EntityEditor');
+    }
+  };
+
   // Componentes disponibles para añadir
   const componentTypes = useMemo(() => [
     'Transform', 'RenderMesh', 'MaterialRef', 'Velocity', 'Physics', 'RigidBody',
@@ -30,6 +40,9 @@ export default function EntityEditor({ world, onClose, onEntitySelect }) {
         });
       }
       setEntities(entityList);
+
+      // Llamar a debug para usar las variables disponibles
+      debugAvailableComponents();
     };
 
     updateEntities();
