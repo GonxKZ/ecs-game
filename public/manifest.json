@@ -1,0 +1,121 @@
+{
+  "name": "Motor ECS Educativo",
+  "short_name": "ECS Game",
+  "description": "Motor de videojuegos educativo para aprender Entity-Component-System (ECS) y Data-Oriented Design",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4ade80",
+  "orientation": "landscape-primary",
+  "scope": "/",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "categories": ["education", "games", "productivity"],
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/gameplay-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Pantalla principal del juego"
+    },
+    {
+      "src": "/screenshots/debug-tools.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Herramientas de debugging"
+    }
+  ],
+  "features": [
+    "WebGL",
+    "Web Audio API",
+    "Service Workers",
+    "Background Sync",
+    "Push Notifications",
+    "Full Screen",
+    "Orientation Lock"
+  ],
+  "shortcuts": [
+    {
+      "name": "Iniciar Juego",
+      "short_name": "Jugar",
+      "description": "Inicia el juego inmediatamente",
+      "url": "/?action=play",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Herramientas de Debug",
+      "short_name": "Debug",
+      "description": "Abre las herramientas de debugging",
+      "url": "/?action=debug",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Editor de Niveles",
+      "short_name": "Editor",
+      "description": "Abre el editor de niveles",
+      "url": "/?action=editor",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "types": [
+      {
+        "accept": ["image/*", "video/*", "audio/*"]
+      }
+    ]
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+ecs",
+      "url": "/handle-protocol?type=%s"
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/new-note"
+  },
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ]
+}

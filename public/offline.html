@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor ECS Educativo - Sin Conexión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #4ade80, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .features h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #4ade80;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .features li::before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+        }
+
+        .retry-btn {
+            background: linear-gradient(45deg, #4ade80, #22d3ee);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(34, 211, 238, 0.3);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(34, 211, 238, 0.4);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .status p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22d3ee);
+            width: 0%;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        .info {
+            margin-top: 30px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎮</div>
+        <h1>Motor ECS Educativo</h1>
+        <p class="subtitle">
+            Actualmente sin conexión a internet, pero puedes seguir aprendiendo sobre ECS y Data-Oriented Design con las herramientas que ya tienes disponibles.
+        </p>
+
+        <div class="features">
+            <h3>🔧 Herramientas Disponibles Offline</h3>
+            <ul>
+                <li>Inspector ECS completo con 4 pestañas</li>
+                <li>Sistema de breakpoints para debugging</li>
+                <li>Audio X-Ray Mode con tonos únicos por evento</li>
+                <li>Frame Diff Visual para análisis de cambios</li>
+                <li>Cathode Ray Mode como osciloscopio visual</li>
+                <li>Deterministic Recorder con semilla fija</li>
+                <li>Benchmarks automáticos con percentiles</li>
+                <li>Framework de tests unitarios completo</li>
+                <li>Modo accesibilidad con alto contraste</li>
+                <li>Reducción de movimiento para accesibilidad</li>
+            </ul>
+        </div>
+
+        <button class="retry-btn" onclick="location.reload()">
+            🔄 Reintentar Conexión
+        </button>
+
+        <div class="status">
+            <p>💡 El contenido educativo y las herramientas de desarrollo están completamente disponibles offline.</p>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+
+        <div class="info">
+            <p>📚 Conceptos que puedes practicar offline:</p>
+            <p>• Arquitectura ECS • Data-Oriented Design • Cache Coherency</p>
+            <p>• Performance Optimization • Real-time Debugging • Testing Frameworks</p>
+        </div>
+    </div>
+
+    <script>
+        // Verificar conexión periódicamente
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.href = '/';
+            }
+        }, 5000);
+
+        // Manejar el botón de reintento
+        document.querySelector('.retry-btn').addEventListener('click', () => {
+            const status = document.querySelector('.status p');
+            status.textContent = '🔄 Verificando conexión...';
+
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    window.location.href = '/';
+                } else {
+                    status.textContent = '❌ Aún sin conexión. Revisa tu conexión a internet.';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
