@@ -15,6 +15,10 @@ export class SystemScheduler {
     this.stepMode = false;
     this.stepRequested = false;
 
+    // Sistema de breakpoints
+    this.breakpoints = new Set();
+    this.breakpointHit = null;
+
     // Estadísticas de rendimiento
     this.stats = {
       totalExecutionTime: 0,
@@ -42,6 +46,7 @@ export class SystemScheduler {
     this.onFrameEnd = null;
     this.onSystemStart = null;
     this.onSystemEnd = null;
+    this.onBreakpointHit = null;
   }
 
   /**
@@ -177,6 +182,26 @@ export class SystemScheduler {
     for (const systemName of this.executionOrder) {
       const systemInfo = this.systems.get(systemName);
       if (!systemInfo) continue;
+
+      // Verificar breakpoint antes de ejecutar el sistema
+      if (this.hasBreakpoint(systemName)) {
+        this.breakpointHit = {
+          systemName,
+          timestamp: performance.now(),
+          deltaTime,
+          world
+        };
+
+        // Notificar callback de breakpoint
+        if (this.onBreakpointHit) {
+          this.onBreakpointHit(this.breakpointHit);
+        }
+
+        console.log(`🔴 Breakpoint alcanzado en sistema: ${systemName}`);
+        // Pausar la ejecución
+        this.pause();
+        return; // Detener ejecución hasta que se continue
+      }
 
       const startTime = performance.now();
 
@@ -417,6 +442,64 @@ export class SchedulerUtils {
     }
 
     return true;
+  }
+
+  // === MÉTODOS DE BREAKPOINTS ===
+
+  /**
+   * Establece un breakpoint en un sistema específico
+   */
+  setBreakpoint(systemName) {
+    this.breakpoints.add(systemName);
+    console.log(`🔴 Breakpoint establecido en sistema: ${systemName}`);
+  }
+
+  /**
+   * Elimina un breakpoint de un sistema específico
+   */
+  clearBreakpoint(systemName) {
+    this.breakpoints.delete(systemName);
+    console.log(`🔵 Breakpoint eliminado de sistema: ${systemName}`);
+  }
+
+  /**
+   * Elimina todos los breakpoints
+   */
+  clearAllBreakpoints() {
+    this.breakpoints.clear();
+    this.breakpointHit = null;
+    console.log('🧹 Todos los breakpoints eliminados');
+  }
+
+  /**
+   * Obtiene la lista de breakpoints activos
+   */
+  getBreakpoints() {
+    return Array.from(this.breakpoints);
+  }
+
+  /**
+   * Verifica si hay un breakpoint activo
+   */
+  hasBreakpoint(systemName) {
+    return this.breakpoints.has(systemName);
+  }
+
+  /**
+   * Continúa la ejecución después de un breakpoint
+   */
+  continueExecution() {
+    this.breakpointHit = null;
+    console.log('▶️ Continuando ejecución después del breakpoint');
+  }
+
+  /**
+   * Ejecuta un paso después de un breakpoint
+   */
+  stepExecution() {
+    this.stepRequested = true;
+    this.breakpointHit = null;
+    console.log('⏯️ Ejecutando un paso después del breakpoint');
   }
 
   /**

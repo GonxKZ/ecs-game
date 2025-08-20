@@ -473,4 +473,228 @@ export class ECSWorld {
 
     return stats;
   }
+
+  // === MÉTODOS PARA ENTITY EDITOR ===
+
+  // Obtener todos los componentes de una entidad
+  getEntityComponents(entityId) {
+    const components = [];
+
+    // Verificar cada tipo de componente posible
+    const componentTypes = [
+      'Transform', 'RenderMesh', 'MaterialRef', 'Velocity', 'Physics',
+      'RigidBody', 'Collider', 'Camera', 'Light', 'Health', 'Input',
+      'AI', 'ParticleSystem', 'Animation', 'AudioSource', 'Parent',
+      'Child', 'State', 'Metadata', 'LOD', 'InstanceGroup', 'InstanceMember'
+    ];
+
+    componentTypes.forEach(componentType => {
+      if (this.hasComponent(entityId, componentType)) {
+        components.push(componentType);
+      }
+    });
+
+    return components;
+  }
+
+  // Obtener datos por defecto para un componente
+  getDefaultComponentData(componentType) {
+    const defaults = {
+      Transform: {
+        position_x: 0, position_y: 0, position_z: 0,
+        rotation_x: 0, rotation_y: 0, rotation_z: 0,
+        scale_x: 1, scale_y: 1, scale_z: 1
+      },
+      RenderMesh: {
+        geometryType: 'sphere',
+        radius: 0.5, width: 1, height: 1, depth: 1,
+        visible: true
+      },
+      MaterialRef: {
+        materialType: 'standard',
+        color_r: 1, color_g: 1, color_b: 1,
+        metalness: 0.5, roughness: 0.5,
+        emissive_r: 0, emissive_g: 0, emissive_b: 0,
+        transparent: false, opacity: 1
+      },
+      Velocity: {
+        linear_x: 0, linear_y: 0, linear_z: 0,
+        angular_x: 0, angular_y: 0, angular_z: 0
+      },
+      Physics: {
+        mass: 1.0, friction: 0.5, restitution: 0.3,
+        velocity_x: 0, velocity_y: 0, velocity_z: 0,
+        acceleration_x: 0, acceleration_y: 0, acceleration_z: 0
+      },
+      RigidBody: {
+        type: 'dynamic',
+        mass: 1
+      },
+      Collider: {
+        shape: 'sphere',
+        radius: 0.5, width: 1, height: 1, depth: 1,
+        friction: 0.5, restitution: 0.3,
+        isSensor: false
+      },
+      Camera: {
+        isActive: false,
+        fov: 75, near: 0.1, far: 1000, aspect: 1.6,
+        mode: 'perspective'
+      },
+      Light: {
+        type: 'point',
+        color_r: 1, color_g: 1, color_b: 1,
+        intensity: 1, range: 10, angle: Math.PI/4, penumbra: 0.1,
+        castShadow: true
+      },
+      Health: {
+        current: 100,
+        maximum: 100
+      },
+      Input: {
+        moveForward: false, moveBackward: false, moveLeft: false, moveRight: false,
+        jump: false, speed: 5.0
+      },
+      AI: {
+        state: 'idle',
+        target_x: 0, target_y: 0, target_z: 0,
+        speed: 3.0
+      },
+      ParticleSystem: {
+        emitterShape: 'point',
+        rate: 10, lifetime: 2.0,
+        startSize: 0.1, endSize: 0.05,
+        startColor_r: 1, startColor_g: 1, startColor_b: 1,
+        endColor_r: 0, endColor_g: 0, endColor_b: 0,
+        velocity_x: 0, velocity_y: 1, velocity_z: 0,
+        velocityVariation: 0.5
+      },
+      Animation: {
+        animationName: 'idle',
+        isPlaying: false, loop: true, speed: 1.0,
+        currentTime: 0, duration: 1
+      },
+      AudioSource: {
+        audioName: 'sound1',
+        volume: 1.0, pitch: 1.0,
+        loop: false, isPlaying: false,
+        spatial: true
+      },
+      Parent: {
+        parentId: 0
+      },
+      Child: {
+        childrenIds: []
+      },
+      State: {
+        currentState: 'default',
+        previousState: 'default',
+        stateTimer: 0
+      },
+      Metadata: {
+        name: 'Entity',
+        description: '',
+        tags: []
+      }
+    };
+
+    return defaults[componentType] || {};
+  }
+
+  // Obtener esquema de un componente
+  getComponentSchema(componentType) {
+    const schemas = {
+      Transform: {
+        position_x: 'float32', position_y: 'float32', position_z: 'float32',
+        rotation_x: 'float32', rotation_y: 'float32', rotation_z: 'float32',
+        scale_x: 'float32', scale_y: 'float32', scale_z: 'float32'
+      },
+      RenderMesh: {
+        geometryType: 'string', radius: 'float32', width: 'float32',
+        height: 'float32', depth: 'float32', visible: 'boolean'
+      },
+      MaterialRef: {
+        materialType: 'string',
+        color_r: 'float32', color_g: 'float32', color_b: 'float32',
+        metalness: 'float32', roughness: 'float32',
+        emissive_r: 'float32', emissive_g: 'float32', emissive_b: 'float32',
+        transparent: 'boolean', opacity: 'float32'
+      },
+      Velocity: {
+        linear_x: 'float32', linear_y: 'float32', linear_z: 'float32',
+        angular_x: 'float32', angular_y: 'float32', angular_z: 'float32'
+      },
+      Physics: {
+        mass: 'float32', friction: 'float32', restitution: 'float32',
+        velocity_x: 'float32', velocity_y: 'float32', velocity_z: 'float32',
+        acceleration_x: 'float32', acceleration_y: 'float32', acceleration_z: 'float32'
+      },
+      RigidBody: {
+        type: 'string', mass: 'float32'
+      },
+      Collider: {
+        shape: 'string', radius: 'float32', width: 'float32', height: 'float32',
+        depth: 'float32', friction: 'float32', restitution: 'float32', isSensor: 'boolean'
+      },
+      Camera: {
+        isActive: 'boolean', fov: 'float32', near: 'float32', far: 'float32',
+        aspect: 'float32', mode: 'string'
+      },
+      Light: {
+        type: 'string', color_r: 'float32', color_g: 'float32', color_b: 'float32',
+        intensity: 'float32', range: 'float32', angle: 'float32', penumbra: 'float32',
+        castShadow: 'boolean'
+      },
+      Health: {
+        current: 'int32', maximum: 'int32'
+      },
+      Input: {
+        moveForward: 'boolean', moveBackward: 'boolean', moveLeft: 'boolean',
+        moveRight: 'boolean', jump: 'boolean', speed: 'float32'
+      },
+      AI: {
+        state: 'string', target_x: 'float32', target_y: 'float32', target_z: 'float32',
+        speed: 'float32'
+      },
+      ParticleSystem: {
+        emitterShape: 'string', rate: 'float32', lifetime: 'float32',
+        startSize: 'float32', endSize: 'float32',
+        startColor_r: 'float32', startColor_g: 'float32', startColor_b: 'float32',
+        endColor_r: 'float32', endColor_g: 'float32', endColor_b: 'float32',
+        velocity_x: 'float32', velocity_y: 'float32', velocity_z: 'float32',
+        velocityVariation: 'float32'
+      },
+      Animation: {
+        animationName: 'string', isPlaying: 'boolean', loop: 'boolean',
+        speed: 'float32', currentTime: 'float32', duration: 'float32'
+      },
+      AudioSource: {
+        audioName: 'string', volume: 'float32', pitch: 'float32',
+        loop: 'boolean', isPlaying: 'boolean', spatial: 'boolean'
+      },
+      Parent: {
+        parentId: 'int32'
+      },
+      Child: {
+        childrenIds: 'array'
+      },
+      State: {
+        currentState: 'string', previousState: 'string', stateTimer: 'float32'
+      },
+      Metadata: {
+        name: 'string', description: 'string', tags: 'array'
+      }
+    };
+
+    return schemas[componentType] || {};
+  }
+
+  // Actualizar componente (para el editor)
+  updateComponent(entityId, componentType, newData) {
+    // Remover el componente existente
+    this.removeComponent(entityId, componentType);
+
+    // Añadir con los nuevos datos
+    this.addComponent(entityId, componentType, newData);
+  }
 }
