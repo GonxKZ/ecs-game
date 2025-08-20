@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
+import QueryInspector from './QueryInspector.jsx';
+import DeltaTimeOscilloscope from './DeltaTimeOscilloscope.jsx';
+import EventTimeline from './EventTimeline.jsx';
 
 export default function PerformancePanel({ world, stats }) {
   const [performanceData, setPerformanceData] = useState([]);
   const [cacheVisualization, setCacheVisualization] = useState([]);
   const [showCacheLupa, setShowCacheLupa] = useState(false);
+  const [showQueryInspector, setShowQueryInspector] = useState(false);
+  const [showDeltaTimeOscilloscope, setShowDeltaTimeOscilloscope] = useState(false);
+  const [showEventTimeline, setShowEventTimeline] = useState(false);
   const [archetypeInfo, setArchetypeInfo] = useState({});
   const [queryStats, setQueryStats] = useState({});
+  const [storageMetrics, setStorageMetrics] = useState({});
+  const [schedulerStats, setSchedulerStats] = useState({});
 
   // Actualizar datos de rendimiento
   useEffect(() => {
@@ -24,6 +32,18 @@ export default function PerformancePanel({ world, stats }) {
       setPerformanceData(systemData);
       setArchetypeInfo(educationalStats.archetypes || {});
       setQueryStats(educationalStats.queryOptimizer || {});
+
+      // Obtener métricas de almacenamiento SoA
+      if (world.storageManager) {
+        const storageStats = world.storageManager.getStats();
+        setStorageMetrics(storageStats);
+      }
+
+      // Obtener estadísticas del scheduler
+      if (world.scheduler) {
+        const schedulerStats = world.scheduler.getStats();
+        setSchedulerStats(schedulerStats);
+      }
 
       // Simular datos de cache para visualización
       if (world.queryOptimizer) {
@@ -57,13 +77,47 @@ export default function PerformancePanel({ world, stats }) {
     <div className="bg-gray-700 p-4 rounded">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-bold text-ecs-blue">🔍 Rendimiento y Optimización</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setShowCacheLupa(!showCacheLupa)}
             className="px-3 py-1 bg-ecs-purple hover:bg-purple-600 rounded text-sm"
           >
             {showCacheLupa ? 'Ocultar' : 'Mostrar'} Lupa de Memoria
           </button>
+          <button
+            onClick={() => setShowQueryInspector(true)}
+            className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 rounded text-sm"
+          >
+            🔍 Query Inspector
+          </button>
+          <button
+            onClick={() => setShowDeltaTimeOscilloscope(true)}
+            className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded text-sm"
+          >
+            📊 Osciloscopio Δt
+          </button>
+          <button
+            onClick={() => setShowEventTimeline(true)}
+            className="px-3 py-1 bg-purple-600 hover:bg-purple-500 rounded text-sm"
+          >
+            🎬 Event Timeline
+          </button>
+          <button
+            onClick={() => world.togglePauseScheduler()}
+            className={`px-3 py-1 rounded text-sm ${
+              world.scheduler?.isPaused ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-blue-600 hover:bg-blue-500'
+            }`}
+          >
+            {world.scheduler?.isPaused ? '▶️ Reanudar' : '⏸️ Pausar'}
+          </button>
+          {world.scheduler?.isPaused && (
+            <button
+              onClick={() => world.stepScheduler()}
+              className="px-3 py-1 bg-orange-600 hover:bg-orange-500 rounded text-sm"
+            >
+              ⏯️ Step
+            </button>
+          )}
         </div>
       </div>
 
@@ -95,6 +149,71 @@ export default function PerformancePanel({ world, stats }) {
             <div className="text-lg font-bold text-green-400">{(queryStats.totalExecutionTime || 0).toFixed(2)}ms</div>
           </div>
         </div>
+      </div>
+
+      {/* Métricas de Entidades Generacionales */}
+      <div className="mb-4">
+        <h4 className="font-semibold mb-2 text-blue-400">🏗️ Entidades Generacionales</h4>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-slate-800 p-3 rounded text-center">
+            <div className="text-lg font-bold text-cyan-400">{world.entityManager?.getStats().aliveEntities || 0}</div>
+            <div className="text-xs text-slate-400">Entidades Vivas</div>
+          </div>
+          <div className="bg-slate-800 p-3 rounded text-center">
+            <div className="text-lg font-bold text-green-400">{world.entityManager?.getStats().reused || 0}</div>
+            <div className="text-xs text-slate-400">Slots Reutilizados</div>
+          </div>
+        </div>
+        <div className="mt-2">
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-slate-400">Load Factor</span>
+            <span className="text-slate-400">{(world.entityManager?.getStats().loadFactor || 0).toFixed(1)}%</span>
+          </div>
+          <div className="w-full bg-slate-600 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full ${
+                world.entityManager?.getStats().isOverloaded ? 'bg-red-500' : 'bg-green-500'
+              }`}
+              style={{ width: `${Math.min(world.entityManager?.getStats().loadFactor || 0, 100)}%` }}
+            ></div>
+          </div>
+          {world.entityManager?.getStats().isOverloaded && (
+            <div className="text-xs text-red-400 mt-1">⚠️ Load factor &gt; 80%</div>
+          )}
+        </div>
+      </div>
+
+      {/* Métricas de Almacenamiento SoA */}
+      <div className="mb-4">
+        <h4 className="font-semibold mb-2 text-yellow-400">💾 Almacenamiento SoA</h4>
+        <div className="space-y-2 max-h-32 overflow-y-auto">
+          {Object.entries(storageMetrics.storages || {}).map(([componentName, stats]) => (
+            <div key={componentName} className="bg-slate-800 p-2 rounded">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-mono text-purple-400">{componentName}</span>
+                <span className="text-xs text-slate-400">
+                  {stats.size}/{stats.capacity} ({stats.loadFactor?.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="w-full bg-slate-600 rounded-full h-1.5">
+                <div
+                  className={`h-1.5 rounded-full ${
+                    stats.isOverloaded ? 'bg-red-500' : stats.loadFactor > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                  }`}
+                  style={{ width: `${Math.min(stats.loadFactor || 0, 100)}%` }}
+                ></div>
+              </div>
+              {stats.isOverloaded && (
+                <div className="text-xs text-red-400 mt-1">⚠️ Load factor &gt; 80%</div>
+              )}
+            </div>
+          ))}
+        </div>
+        {storageMetrics.overloadedStorages?.length > 0 && (
+          <div className="text-xs text-red-400 mt-2">
+            ⚠️ Almacenamientos sobrecargados: {storageMetrics.overloadedStorages.join(', ')}
+          </div>
+        )}
       </div>
 
       {/* Gráfico de barras de rendimiento por sistema */}
@@ -198,6 +317,25 @@ export default function PerformancePanel({ world, stats }) {
         </div>
       )}
 
+      {/* Estadísticas del Scheduler */}
+      <div className="mb-4">
+        <h4 className="font-semibold mb-2 text-purple-400">⏰ Scheduler</h4>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="bg-slate-800 p-2 rounded">
+            <div className="text-slate-400">Estado</div>
+            <div className={`font-bold ${world.scheduler?.isPaused ? 'text-red-400' : 'text-green-400'}`}>
+              {world.scheduler?.isPaused ? '⏸️ Pausado' : '▶️ Activo'}
+            </div>
+          </div>
+          <div className="bg-slate-800 p-2 rounded">
+            <div className="text-slate-400">Fixed Timestep</div>
+            <div className="text-lg font-bold text-blue-400">
+              {((schedulerStats.fixedTimeStep || 0) * 1000).toFixed(1)}ms
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Consejos de optimización */}
       <div className="mt-4 p-2 bg-yellow-900/20 rounded">
         <div className="text-xs text-yellow-200 mb-1">⚡ Consejos de Optimización</div>
@@ -205,9 +343,32 @@ export default function PerformancePanel({ world, stats }) {
           <li>• Los arquetipos agrupan entidades con componentes similares</li>
           <li>• Iterar sobre arrays densos es más rápido que saltar en memoria</li>
           <li>• Minimizar cambios de componentes para mantener arquetipos estables</li>
-          <li>• El optimizador de queries encuentra el componente más restrictivo primero</li>
+          <li>• El scheduler maneja fixed timestep automáticamente</li>
+          <li>• Usa pausa/step para debugging determinista</li>
         </ul>
       </div>
+
+      {/* Modals */}
+      {showQueryInspector && (
+        <QueryInspector
+          world={world}
+          onClose={() => setShowQueryInspector(false)}
+        />
+      )}
+
+      {showDeltaTimeOscilloscope && world.scheduler && (
+        <DeltaTimeOscilloscope
+          scheduler={world.scheduler}
+          onClose={() => setShowDeltaTimeOscilloscope(false)}
+        />
+      )}
+
+      {showEventTimeline && world.eventBus && (
+        <EventTimeline
+          eventBus={world.eventBus}
+          onClose={() => setShowEventTimeline(false)}
+        />
+      )}
     </div>
   );
 }

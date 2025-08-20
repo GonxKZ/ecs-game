@@ -30,6 +30,25 @@ export class ComponentStorage {
   }
 
   /**
+   * Obtiene el valor por defecto para un tipo de campo
+   */
+  getDefaultValue(fieldType) {
+    switch (fieldType) {
+      case 'float32':
+      case 'int32':
+      case 'uint32':
+      case 'uint8':
+        return 0;
+      case 'boolean':
+        return false;
+      case 'string':
+        return '';
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Crea los TypedArrays basados en el esquema
    */
   createArrays() {
@@ -180,7 +199,10 @@ export class ComponentStorage {
    * Escribe datos en un slot específico
    */
   writeDataToSlot(slot, data) {
-    for (const [fieldName, value] of Object.entries(data)) {
+    // Convertir de objeto a SoA si es necesario
+    const soaData = this.convertObjectToSoa(data);
+
+    for (const [fieldName, value] of Object.entries(soaData)) {
       if (this.arrays[fieldName]) {
         if (this.arrays[fieldName] instanceof Array) {
           this.arrays[fieldName][slot] = value;
@@ -189,6 +211,56 @@ export class ComponentStorage {
         }
       }
     }
+  }
+
+  /**
+   * Convierte datos de objeto a formato SoA
+   */
+  convertObjectToSoa(objData) {
+    // Para Transform: convertir objeto a campos separados
+    if (this.componentName === 'Transform') {
+      return {
+        position_x: objData.position?.x || 0,
+        position_y: objData.position?.y || 0,
+        position_z: objData.position?.z || 0,
+        rotation_x: objData.rotation?.x || 0,
+        rotation_y: objData.rotation?.y || 0,
+        rotation_z: objData.rotation?.z || 0,
+        scale_x: objData.scale?.x || 1,
+        scale_y: objData.scale?.y || 1,
+        scale_z: objData.scale?.z || 1
+      };
+    }
+
+    // Para Velocity: convertir objeto a campos separados
+    if (this.componentName === 'Velocity') {
+      return {
+        linear_x: objData.linear?.x || 0,
+        linear_y: objData.linear?.y || 0,
+        linear_z: objData.linear?.z || 0,
+        angular_x: objData.angular?.x || 0,
+        angular_y: objData.angular?.y || 0,
+        angular_z: objData.angular?.z || 0
+      };
+    }
+
+    // Para Physics: convertir objeto a campos separados
+    if (this.componentName === 'Physics') {
+      return {
+        mass: objData.mass || 1.0,
+        friction: objData.friction || 0.5,
+        restitution: objData.restitution || 0.3,
+        velocity_x: objData.velocity?.x || 0,
+        velocity_y: objData.velocity?.y || 0,
+        velocity_z: objData.velocity?.z || 0,
+        acceleration_x: objData.acceleration?.x || 0,
+        acceleration_y: objData.acceleration?.y || 0,
+        acceleration_z: objData.acceleration?.z || 0
+      };
+    }
+
+    // Para otros componentes, devolver datos tal cual
+    return objData;
   }
 
   /**
@@ -206,7 +278,79 @@ export class ComponentStorage {
       }
     }
 
-    return data;
+    // Intentar convertir a formato de objeto si es necesario
+    try {
+      // Importación dinámica para evitar dependencias circulares
+      return this.convertSoaToObject(data);
+    } catch {
+      // Si no se puede convertir, devolver datos SoA
+      return data;
+    }
+  }
+
+  /**
+   * Convierte datos SoA a formato de objeto
+   */
+  convertSoaToObject(soaData) {
+    // Para Transform: convertir campos separados a objeto
+    if (this.componentName === 'Transform') {
+      return {
+        position: {
+          x: soaData.position_x || 0,
+          y: soaData.position_y || 0,
+          z: soaData.position_z || 0
+        },
+        rotation: {
+          x: soaData.rotation_x || 0,
+          y: soaData.rotation_y || 0,
+          z: soaData.rotation_z || 0
+        },
+        scale: {
+          x: soaData.scale_x || 1,
+          y: soaData.scale_y || 1,
+          z: soaData.scale_z || 1
+        }
+      };
+    }
+
+    // Para Velocity: convertir campos separados a objeto
+    if (this.componentName === 'Velocity') {
+      return {
+        linear: {
+          x: soaData.linear_x || 0,
+          y: soaData.linear_y || 0,
+          z: soaData.linear_z || 0
+        },
+        angular: {
+          x: soaData.angular_x || 0,
+          y: soaData.angular_y || 0,
+          z: soaData.angular_z || 0
+        }
+      };
+    }
+
+    // Para Physics: convertir campos separados a objeto
+    if (this.componentName === 'Physics') {
+      return {
+        mass: soaData.mass || 1.0,
+        friction: soaData.friction || 0.5,
+        restitution: soaData.restitution || 0.3,
+        velocity: {
+          x: soaData.velocity_x || 0,
+          y: soaData.velocity_y || 0,
+          z: soaData.velocity_z || 0
+        },
+        acceleration: {
+          x: soaData.acceleration_x || 0,
+          y: soaData.acceleration_y || 0,
+          z: soaData.acceleration_z || 0
+        },
+        forces: [] // Los arrays no se manejan en SoA por simplicidad
+      };
+    }
+
+    // Para otros componentes, devolver datos SoA tal cual
+    return soaData;
   }
 
   /**
@@ -215,10 +359,12 @@ export class ComponentStorage {
   clearSlot(slot) {
     for (const [fieldName, fieldType] of Object.entries(this.schema)) {
       const array = this.arrays[fieldName];
+      const defaultValue = this.getDefaultValue(fieldType);
+
       if (array instanceof Array) {
-        array[slot] = fieldType === 'string' ? '' : null;
+        array[slot] = defaultValue;
       } else {
-        array[slot] = 0;
+        array[slot] = defaultValue;
       }
     }
   }

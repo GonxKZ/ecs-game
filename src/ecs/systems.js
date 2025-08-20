@@ -171,7 +171,7 @@ export class EventSystem {
     this.lastExecutionTime = 0;
   }
 
-  update(deltaTime, world) {
+  update() {
     // Sistema de eventos básico
     // En un juego real, procesaría colas de eventos
     console.log('🎯 Sistema de eventos ejecutándose...');

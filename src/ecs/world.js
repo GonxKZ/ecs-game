@@ -6,6 +6,8 @@
 import { EntityManager } from './entity.js';
 import { StorageManager } from './storage.js';
 import { QueryOptimizer, PerformanceVisualizer } from './queryOptimizer.js';
+import { EventBus, ECSEventSystem } from './events.js';
+import { SystemScheduler } from './scheduler.js';
 
 export class ECSWorld {
   constructor() {
@@ -14,6 +16,12 @@ export class ECSWorld {
 
     // Sistema de almacenamiento SoA
     this.storageManager = new StorageManager();
+
+    // Sistema de eventos lock-free
+    this.eventBus = new EventBus();
+
+    // Scheduler profesional con fixed timestep
+    this.scheduler = new SystemScheduler();
 
     // Mantener compatibilidad con código existente
     this.entities = new Map(); // entityId -> Set<componentTypes>
@@ -34,7 +42,10 @@ export class ECSWorld {
    * Crea una nueva entidad y devuelve su ID
    */
   createEntity(name) {
-    const entityId = this.nextEntityId++;
+    // Usar el sistema de entidades generacionales
+    const entityId = this.entityManager.createEntity();
+
+    // Mantener compatibilidad con código existente
     this.entities.set(entityId, new Set());
 
     // Añadir componente de metadatos si se proporciona nombre
@@ -55,10 +66,23 @@ export class ECSWorld {
       return;
     }
 
+    // Verificar que la entidad esté viva usando el EntityManager
+    if (!this.entityManager.isAlive(entityId)) {
+      console.warn(`⚠️ Intento de eliminar entidad ya destruida: ${entityId}`);
+      return;
+    }
+
     // Remover de todos los componentes
     this.entities.get(entityId).forEach(componentType => {
       this.components.get(componentType).delete(entityId);
+      // También del sistema de almacenamiento SoA
+      if (this.storageManager) {
+        this.storageManager.removeComponent(entityId, componentType);
+      }
     });
+
+    // Destruir usando el EntityManager (invalida todas las referencias)
+    this.entityManager.destroyEntity(entityId);
 
     this.entities.delete(entityId);
     console.log(`🗑️ Entidad ${entityId} eliminada`);
@@ -67,13 +91,20 @@ export class ECSWorld {
   /**
    * Registra un nuevo tipo de componente
    */
-  registerComponent(componentType) {
+  registerComponent(componentType, schema) {
     if (this.components.has(componentType)) {
       console.warn(`⚠️ Componente ${componentType} ya registrado`);
       return;
     }
 
+    // Mantener compatibilidad con código existente
     this.components.set(componentType, new Map());
+
+    // Registrar en el sistema de almacenamiento SoA
+    if (this.storageManager && schema) {
+      this.storageManager.registerComponent(componentType, schema);
+    }
+
     console.log(`📦 Componente ${componentType} registrado`);
   }
 
@@ -86,8 +117,19 @@ export class ECSWorld {
       return false;
     }
 
+    // Verificar que la entidad esté viva
+    if (!this.entityManager.isAlive(entityId)) {
+      console.warn(`⚠️ Intento de añadir componente a entidad destruida: ${entityId}`);
+      return false;
+    }
+
     if (!this.components.has(componentType)) {
       this.registerComponent(componentType, data);
+    }
+
+    // Añadir al sistema de almacenamiento SoA
+    if (this.storageManager) {
+      this.storageManager.addComponent(entityId, componentType, data);
     }
 
     const componentMap = this.components.get(componentType);
@@ -187,43 +229,38 @@ export class ECSWorld {
   }
 
   /**
-   * Registra un sistema
+   * Registra un sistema (método legacy - usa el nuevo con dependencias)
    */
-  registerSystem(name, system) {
+  registerSystem(name, system, dependencies = []) {
     this.systems.set(name, system);
-    console.log(`⚙️ Sistema ${name} registrado`);
+
+    // Usar el scheduler si está disponible
+    if (this.scheduler) {
+      this.scheduler.registerSystem(name, system, dependencies);
+    }
+
+    // Integrar con el sistema de eventos si es necesario
+    if (name === 'Event' && this.eventBus) {
+      system.eventBus = this.eventBus;
+    }
+
+    console.log(`⚙️ Sistema ${name} registrado${dependencies.length ? ` con dependencias: ${dependencies.join(', ')}` : ''}`);
   }
 
   /**
-   * Ejecuta todos los sistemas
+   * Ejecuta todos los sistemas usando el scheduler profesional
    */
   update(deltaTime) {
     if (!this.isRunning) return;
 
-    // Actualizar tiempo acumulado
-    this.accumulatedTime += deltaTime;
+    // Usar el scheduler con fixed timestep y dependencias
+    this.scheduler.executeFrame(deltaTime, this);
 
-    // Ejecutar sistemas de tiempo variable
+    // Mantener compatibilidad: actualizar lastExecutionTime en sistemas antiguos
     for (const [, system] of this.systems) {
-      if (system.update) {
-        const startTime = performance.now();
-        system.update(deltaTime, this);
-        const endTime = performance.now();
-        system.lastExecutionTime = endTime - startTime;
+      if (system.lastExecutionTime === undefined) {
+        system.lastExecutionTime = 0;
       }
-    }
-
-    // Ejecutar sistemas de tiempo fijo
-    while (this.accumulatedTime >= this.fixedTimeStep) {
-      for (const [, system] of this.systems) {
-        if (system.fixedUpdate) {
-          const startTime = performance.now();
-          system.fixedUpdate(this.fixedTimeStep, this);
-          const endTime = performance.now();
-          system.lastExecutionTime = endTime - startTime;
-        }
-      }
-      this.accumulatedTime -= this.fixedTimeStep;
     }
   }
 
@@ -242,6 +279,44 @@ export class ECSWorld {
   stop() {
     this.isRunning = false;
     console.log('⏹️ ECS detenido');
+  }
+
+  /**
+   * Registra un sistema con dependencias en el scheduler
+   */
+  registerSystem(name, system, dependencies = []) {
+    this.systems.set(name, system);
+    this.scheduler.registerSystem(name, system, dependencies);
+
+    // Integrar con el sistema de eventos si es necesario
+    if (name === 'Event' && this.eventBus) {
+      system.eventBus = this.eventBus;
+    }
+
+    console.log(`✅ Sistema ${name} registrado con dependencias: ${dependencies.join(', ')}`);
+  }
+
+  /**
+   * Control del scheduler
+   */
+  pauseScheduler() {
+    this.scheduler.pause();
+  }
+
+  resumeScheduler() {
+    this.scheduler.resume();
+  }
+
+  togglePauseScheduler() {
+    this.scheduler.togglePause();
+  }
+
+  enableStepMode() {
+    this.scheduler.enableStepMode();
+  }
+
+  stepScheduler() {
+    this.scheduler.step(this);
   }
 
   /**

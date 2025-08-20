@@ -8,17 +8,28 @@ export class EntityManager {
     this.maxEntities = maxEntities;
     this.nextEntityId = 1;
 
-    // Generaciones: índice -> generación actual
+    // Generaciones: índice -> generación actual (8 bits, overflow intencional)
     this.generations = new Uint8Array(maxEntities);
 
-    // Free list: slots libres para reutilizar
+    // Free list: slots libres para reutilizar (LIFO para locality)
     this.freeSlots = [];
 
-    // Mapa entityId -> slot para lookups rápidos
+    // Mapa entityId -> slot para lookups O(1)
     this.entityToSlot = new Map();
 
-    // Mapa slot -> entityId para validación
+    // Mapa slot -> entityId para validación O(1)
     this.slotToEntity = new Map();
+
+    // Estadísticas para debugging
+    this.stats = {
+      created: 0,
+      destroyed: 0,
+      reused: 0,
+      alive: 0
+    };
+
+    // Pool de entityIds destruidos para evitar GC de strings
+    this.destroyedIds = new Set();
   }
 
   /**
@@ -29,15 +40,17 @@ export class EntityManager {
     let slot;
 
     if (this.freeSlots.length > 0) {
-      // Reutilizar slot libre
+      // Reutilizar slot libre (LIFO para mejor locality)
       slot = this.freeSlots.pop();
       this.generations[slot]++;
+      this.stats.reused++;
     } else {
       // Crear nuevo slot
       if (this.nextEntityId >= this.maxEntities) {
         throw new Error('Máximo número de entidades alcanzado');
       }
       slot = this.nextEntityId++;
+      this.stats.created++;
     }
 
     const generation = this.generations[slot];
@@ -45,6 +58,10 @@ export class EntityManager {
 
     this.entityToSlot.set(entityId, slot);
     this.slotToEntity.set(slot, entityId);
+    this.stats.alive++;
+
+    // Limpiar del pool de destruidos si estaba ahí
+    this.destroyedIds.delete(entityId);
 
     return entityId;
   }
@@ -60,12 +77,18 @@ export class EntityManager {
 
     const slot = this.entityToSlot.get(entityId);
 
-    // Incrementar generación para invalidar referencias
+    // Incrementar generación para invalidar referencias (overflow intencional)
     this.generations[slot]++;
     this.freeSlots.push(slot);
 
     this.entityToSlot.delete(entityId);
     this.slotToEntity.delete(slot);
+
+    // Añadir al pool de destruidos para evitar GC
+    this.destroyedIds.add(entityId);
+
+    this.stats.destroyed++;
+    this.stats.alive--;
 
     return true;
   }
@@ -125,11 +148,20 @@ export class EntityManager {
    * Obtiene estadísticas del sistema de entidades
    */
   getStats() {
+    const totalSlots = this.nextEntityId - 1;
+    const usedSlots = totalSlots - this.freeSlots.length;
+    const loadFactor = (usedSlots / this.maxEntities) * 100;
+
     return {
-      aliveEntities: this.entityToSlot.size,
+      aliveEntities: this.stats.alive,
       freeSlots: this.freeSlots.length,
-      totalSlots: this.nextEntityId - 1,
-      loadFactor: ((this.nextEntityId - 1 - this.freeSlots.length) / this.maxEntities) * 100
+      totalSlots,
+      usedSlots,
+      loadFactor,
+      isOverloaded: loadFactor > 80,
+      generationsUsed: Math.max(...this.generations),
+      destroyedIdsPool: this.destroyedIds.size,
+      ...this.stats
     };
   }
 
