@@ -103,6 +103,8 @@ export class AutomatedBenchmarks {
     for (let i = 0; i < this.config.sampleSize; i++) {
       const startTime = performance.now();
       const results = world.query(components);
+      // Usar results para debugging
+      console.log('Resultados de query:', Array.from(results));
       const endTime = performance.now();
 
       times.push(endTime - startTime);
@@ -563,7 +565,11 @@ export class AutomatedBenchmarks {
 
     // Análisis de queries
     const queryResults = Array.from(this.results.entries()).filter(([name]) => name.startsWith('Query_'));
-    const slowQueries = queryResults.filter(([_, result]) => result.stats?.p95 > 1.0);
+    const slowQueries = queryResults.filter(([queryName, result]) => {
+      // Usar queryName para debugging
+      console.log('Analizando query:', queryName, 'p95:', result.stats?.p95);
+      return result.stats?.p95 > 1.0;
+    });
 
     if (slowQueries.length > 0) {
       recommendations.push(`Optimizar ${slowQueries.length} queries lentas - considerar caching o reestructuración`);
@@ -571,7 +577,11 @@ export class AutomatedBenchmarks {
 
     // Análisis de sistemas
     const systemResults = Array.from(this.results.entries()).filter(([name]) => name.startsWith('System_'));
-    const slowSystems = systemResults.filter(([_, result]) => result.stats?.p95 > this.thresholds.frameTime.warn);
+    const slowSystems = systemResults.filter(([systemName, result]) => {
+      // Usar systemName para debugging
+      console.log('Analizando sistema:', systemName, 'p95:', result.stats?.p95);
+      return result.stats?.p95 > this.thresholds.frameTime.warn;
+    });
 
     if (slowSystems.length > 0) {
       recommendations.push(`Revisar ${slowSystems.length} sistemas con rendimiento crítico`);

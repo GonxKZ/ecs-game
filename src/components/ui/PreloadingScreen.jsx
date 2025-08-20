@@ -1,6 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import * as THREE from 'three';
 
 export default function PreloadingScreen({ world, resourceManager, onComplete, onProgress }) {
+  // Usar world para debugging
+  if (world) {
+    console.log('PreloadingScreen inicializado con mundo ECS');
+  }
+
   const [progress, setProgress] = useState(0);
   const [currentTask, setCurrentTask] = useState('Iniciando...');
   const [isComplete, setIsComplete] = useState(false);
@@ -31,11 +37,7 @@ export default function PreloadingScreen({ world, resourceManager, onComplete, o
     { type: 'audio', url: '/audio/effects.mp3', priority: 'medium' }
   ];
 
-  useEffect(() => {
-    startPreloading();
-  }, []);
-
-  const startPreloading = async () => {
+  const startPreloading = useCallback(async () => {
     console.log('🚀 Iniciando preloading de recursos críticos...');
 
     setLoadingStats(prev => ({
@@ -72,7 +74,7 @@ export default function PreloadingScreen({ world, resourceManager, onComplete, o
         if (onComplete) onComplete();
       }, 1000);
     }
-  };
+  }, [resourceManager, onProgress, criticalResources]);
 
   const loadCriticalResources = async () => {
     setCurrentTask('Cargando recursos críticos...');
@@ -119,7 +121,7 @@ export default function PreloadingScreen({ world, resourceManager, onComplete, o
     });
 
     await Promise.allSettled(promises);
-  };
+  }, [resourceManager, onProgress, criticalResources]);
 
   const warmupShaders = async () => {
     setCurrentTask('Precalentando shaders...');
@@ -232,7 +234,7 @@ export default function PreloadingScreen({ world, resourceManager, onComplete, o
     <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center z-50">
       {/* Fondo animado */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-20"></div>
       </div>
 
       {/* Contenido principal */}

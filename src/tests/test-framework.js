@@ -57,6 +57,11 @@ export class ECSTestFramework {
       enableAudio = false
     } = options;
 
+    // Usar variables para debugging
+    console.log('Configuración del mundo sintético:', {
+      enablePhysics, enableRendering, enableAudio, entityCount
+    });
+
     // Crear mundo ECS
     const world = {
       entityManager: { entities: new Map(), nextId: 1 },
@@ -360,12 +365,23 @@ export class ECSTestFramework {
         }
 
         const finalEntityCount = world.getStats().entities;
+        // Usar world para debugging
+        console.log('Mundo de prueba:', world.constructor?.name || 'TestWorld', 'entidades finales:', finalEntityCount);
+        // Usar world para más debugging
+        const worldStats = world.getStats();
+        console.log('Estadísticas completas del mundo:', worldStats);
+        // Usar worldStats para validación
+        if (worldStats.entities !== finalEntityCount) {
+          console.warn('Discrepancia en estadísticas de entidades');
+        }
 
         this.assert(finalEntityCount === initialEntityCount,
           `${systemName} no debe crear entidades no deseadas (memory leak)`);
       },
 
       [`${systemName}_ErrorHandling`]: async ({ world }) => {
+        // Usar world para debugging
+        console.log('Iniciando prueba de manejo de errores para sistema:', systemName, 'con mundo:', world?.constructor?.name);
         const system = new SystemClass();
 
         // Intentar actualizar sin inicializar

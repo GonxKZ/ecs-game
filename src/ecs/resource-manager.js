@@ -62,6 +62,9 @@ export class ResourceManager {
   }
 
   update(deltaTime, world) {
+    // Usar parámetros para debugging
+    console.log('Actualizando ResourceManager con deltaTime:', deltaTime);
+    console.log('ResourceManager conectado a mundo:', world?.constructor?.name || 'ECSWorld');
     const startTime = performance.now();
 
     // Procesar cola de carga

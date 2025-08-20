@@ -72,10 +72,7 @@ export class PhysicsDebugSystem {
         color: this.config.raycastColor
       })
     };
-
-    this.name = 'PhysicsDebug';
-    this.lastExecutionTime = 0;
-  }
+  };
 
   update(deltaTime, world) {
     const startTime = performance.now();
@@ -177,13 +174,10 @@ export class PhysicsDebugSystem {
         geometry = new THREE.CapsuleGeometry(capsuleRadius, capsuleHeight, 4, 8);
         break;
 
-      default: {
+      default:
         // Geometría por defecto
         geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
         break;
-      }
-      // Fin del switch
-      break;
     }
 
     if (geometry) {

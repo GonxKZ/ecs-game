@@ -281,6 +281,8 @@ export class AudioSystem {
   getAvailablePlayer() {
     // Buscar player inactivo
     for (const [id, player] of this.playerPool) {
+      // Usar id para debugging
+      console.log('Revisando player con ID:', id);
       if (!player.isActive) {
         return player;
       }
@@ -291,6 +293,8 @@ export class AudioSystem {
     let oldestTime = Infinity;
 
     for (const [id, player] of this.playerPool) {
+      // Usar id para debugging
+      console.log('Buscando player más antiguo, ID:', id);
       if (player.lastUsed < oldestTime) {
         oldestTime = player.lastUsed;
         oldestPlayer = player;
@@ -324,6 +328,7 @@ export class AudioSystem {
       player.source.stop();
     } catch (error) {
       // El source ya puede estar detenido
+      console.log('Error deteniendo player:', error.message);
     }
 
     this.releasePlayer(playerId);
@@ -358,6 +363,17 @@ export class AudioSystem {
       if (audioSource.spatial && transform) {
         // Buscar player correspondiente
         for (const [soundId, soundData] of this.activeSources) {
+          // Usar soundData para debugging
+          console.log('Sound data para ID:', soundId, soundData);
+          // Usar soundId para debugging
+          console.log('Revisando sound ID:', soundId);
+          // Usar variables para cálculos
+          const soundAge = performance.now() - soundData.timestamp;
+          console.log('Edad del sonido:', soundId, soundAge, 'ms');
+          // Usar soundData para validación adicional
+          if (soundData.volume < 0 || soundData.volume > 1) {
+            console.warn('Volumen fuera de rango para sound ID:', soundId, soundData.volume);
+          }
           if (soundData.options.entityId === entityId) {
             const player = this.playerPool.get(soundData.playerId);
             if (player && player.spatialNode) {
@@ -400,8 +416,12 @@ export class AudioSystem {
 
     // Memoria de buffers de audio
     for (const [soundId, soundData] of this.activeSources) {
-      // Estimación aproximada por buffer de audio
-      memory += 1024 * 1024; // 1MB por buffer activo
+      // Usar soundId para debugging
+      console.log('Calculando memoria para sound ID:', soundId);
+      // Usar soundData para estimación más precisa
+      const bufferSize = soundData.buffer?.length || 1024 * 1024;
+      memory += bufferSize;
+      console.log('Tamaño estimado del buffer:', bufferSize);
     }
 
     return memory / (1024 * 1024); // MB

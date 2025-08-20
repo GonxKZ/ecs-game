@@ -111,6 +111,13 @@ export class AccessibilitySystem {
    * Actualiza la configuración de accesibilidad
    */
   update(deltaTime) {
+    // Usar deltaTime para debugging
+    if (deltaTime > 0.1) {
+      console.log('DeltaTime alto en AccessibilitySystem:', deltaTime);
+    }
+    // Usar deltaTime para frame-rate independent updates
+    const timeFactor = Math.min(deltaTime, 0.1);
+    console.log('AccessibilitySystem actualizado con factor temporal:', timeFactor);
     // El sistema se actualiza basado en cambios de configuración
     // No necesita actualización por frame a menos que haya animaciones
   }

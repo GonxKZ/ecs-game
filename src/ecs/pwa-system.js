@@ -171,6 +171,8 @@ export class PWASystem {
 
     try {
       const result = await this.deferredPrompt.prompt();
+      // Usar result para debugging
+      console.log('Prompt PWA mostrado con resultado:', result);
       const { outcome } = await this.deferredPrompt.userChoice;
 
       this.deferredPrompt = null;

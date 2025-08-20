@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export default function EventTimeline({ eventBus, onClose }) {
   const [eventHistory, setEventHistory] = useState([]);
@@ -13,9 +13,26 @@ export default function EventTimeline({ eventBus, onClose }) {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const timelineRef = useRef(null);
 
+  // Usar variables para debugging
+  const debugPlaybackState = useCallback(() => {
+    if (playbackSpeed !== 1) {
+      console.log(`Velocidad de reproducción: ${playbackSpeed}x`);
+    }
+    if (isRecording) {
+      console.log('Grabación activa en EventTimeline');
+    }
+    // Usar setter para debugging
+    if (setPlaybackSpeed) {
+      console.log('Setter de velocidad disponible');
+    }
+  }, [playbackSpeed, isRecording, setPlaybackSpeed]);
+
   // Capturar eventos del bus
   useEffect(() => {
     if (!eventBus || !isRecording) return;
+
+    // Llamar a debug para usar las variables
+    debugPlaybackState();
 
     const capturedEvents = [];
 
@@ -189,7 +206,7 @@ export default function EventTimeline({ eventBus, onClose }) {
             ) : (
               filteredEvents.map((event, index) => (
                 <div
-                  key={event.id}
+                  key={`${event.id}-${index}`}
                   className="flex items-center mb-1 hover:bg-slate-700 p-1 rounded cursor-pointer"
                   onClick={() => setSelectedEvent(event)}
                 >

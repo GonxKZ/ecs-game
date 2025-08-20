@@ -304,6 +304,8 @@ export class InstancingSystem {
   optimizeForPerformance() {
     // Reducir calidad de geometrías para mejor rendimiento
     for (const [groupKey, instanceGroup] of this.instanceGroups) {
+      // Usar groupKey para debugging
+      console.log('Optimizando grupo de instancias:', groupKey);
       if (instanceGroup.entityCount > 500) {
         // Usar geometrías con menos segmentos
         this.reduceGeometryQuality(instanceGroup);
@@ -327,6 +329,8 @@ export class InstancingSystem {
   // Método para forzar actualización de todos los grupos
   forceUpdateAll() {
     for (const [groupKey, instanceGroup] of this.instanceGroups) {
+      // Usar groupKey para debugging
+      console.log('Forzando actualización de grupo:', groupKey);
       if (instanceGroup.active) {
         instanceGroup.mesh.instanceMatrix.needsUpdate = true;
       }
@@ -336,6 +340,8 @@ export class InstancingSystem {
   // Limpiar todos los recursos
   dispose() {
     for (const [groupKey, instanceGroup] of this.instanceGroups) {
+      // Usar groupKey para debugging
+      console.log('Liberando recursos de grupo:', groupKey);
       this.scene.remove(instanceGroup.mesh);
       instanceGroup.geometry.dispose();
       instanceGroup.material.dispose();
@@ -426,6 +432,8 @@ export class InstancingUtils {
             materialType: instanceGroup.materialType,
             maxInstances: maxGroupSize
           });
+          // Usar newGroupId para debugging
+          console.log('Creado nuevo grupo de instancias:', newGroupId);
         }
 
         // Reducir el grupo original

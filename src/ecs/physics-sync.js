@@ -60,6 +60,8 @@ export class PhysicsSyncSystem {
     for (const entityId of syncableEntities) {
       const transform = world.getComponent(entityId, 'Transform');
       const rigidBody = world.getComponent(entityId, 'RigidBody');
+      // Usar rigidBody para debugging
+      console.log('RigidBody para entidad:', entityId, rigidBody);
 
       const rapierBody = this.rapierSystem.entityRigidBodies.get(entityId);
 

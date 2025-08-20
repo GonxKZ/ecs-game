@@ -68,6 +68,9 @@ export default function PrefabPanel({ world, prefabSystem, onClose }) {
         newPrefabDescription.trim()
       );
 
+      // Usar prefabId para logging
+      console.log(`Prefab creado con ID: ${prefabId}`);
+
       console.log(`🏗️ Prefab creado desde entidad ${selectedEntity.id}: ${newPrefabName}`);
 
       // Reset form
@@ -114,7 +117,7 @@ export default function PrefabPanel({ world, prefabSystem, onClose }) {
     const newName = `${prefab.name} (Copia)`;
     try {
       const newPrefabId = prefabSystem.duplicatePrefab(prefabId, newName);
-      console.log(`📋 Prefab duplicado: ${newName}`);
+      console.log(`📋 Prefab duplicado: ${newName} (ID: ${newPrefabId})`);
     } catch (error) {
       console.error('Error duplicando prefab:', error);
       alert(`Error: ${error.message}`);

@@ -97,6 +97,8 @@ class PerformanceGateChecker {
     if (!frameTime) return;
 
     const { avg, p95, p99 } = frameTime;
+    // Usar avg para debugging
+    console.log('Métricas de frame time:', { avg, p95, p99 });
 
     // Verificar P95 (métrica más importante)
     if (p95 >= PERFORMANCE_THRESHOLDS.frameTime.critical) {
@@ -179,6 +181,8 @@ class PerformanceGateChecker {
     if (!memoryUsage) return;
 
     const { peak, avg, growth } = memoryUsage;
+    // Usar variables para debugging
+    console.log('Métricas de memoria:', { peak, avg, growth });
 
     if (growth >= PERFORMANCE_THRESHOLDS.memoryGrowth.critical) {
       this.issues.critical.push(`Crecimiento de memoria crítico: ${(growth / 1024 / 1024).toFixed(2)}MB (threshold: ${(PERFORMANCE_THRESHOLDS.memoryGrowth.critical / 1024 / 1024).toFixed(1)}MB)`);

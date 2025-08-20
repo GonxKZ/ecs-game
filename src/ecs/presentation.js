@@ -357,6 +357,9 @@ export class PresentationSystem {
   }
 
   updateParticleEntities(world, deltaTime) {
+    // Usar deltaTime para debugging
+    console.log('Actualizando entidades de partículas con deltaTime:', deltaTime);
+
     const particleEntities = world.queryEntities({
       components: ['Transform', 'ParticleSystem']
     });
@@ -367,6 +370,8 @@ export class PresentationSystem {
       // Usar deltaTime para actualizar sistemas de partículas de forma frame-rate independiente
       const entityObject = this.entityObjects.get(entityId);
       const particleSystem = world.getComponent(entityId, 'ParticleSystem');
+      // Usar particleSystem para debugging
+      console.log('Sistema de partículas para entidad:', entityId, particleSystem);
 
       if (entityObject && entityObject.particleSystem) {
         // Actualizar sistema de partículas

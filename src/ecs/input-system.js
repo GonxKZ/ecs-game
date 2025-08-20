@@ -156,6 +156,8 @@ export class InputSystem {
 
     // Procesar cada action map activo
     for (const [mapName, actionMap] of this.actionMaps) {
+      // Usar mapName para debugging
+      console.log('Procesando action map:', mapName);
       if (!actionMap.active) continue;
 
       // Procesar cada acción en el mapa
@@ -454,7 +456,7 @@ export class InputSystem {
       if (inputState) {
         // Actualizar estado de acciones
         this.currentInputState.actions.forEach((actionState, actionName) => {
-          if (inputState.actions.hasOwnProperty(actionName)) {
+          if (Object.prototype.hasOwnProperty.call(inputState.actions, actionName)) {
             inputState.actions[actionName] = {
               pressed: actionState.pressed,
               justPressed: actionState.justPressed,
@@ -466,7 +468,7 @@ export class InputSystem {
 
         // Actualizar estado de ejes
         this.currentInputState.axes.forEach((axisValue, axisName) => {
-          if (inputState.axes.hasOwnProperty(axisName)) {
+          if (Object.prototype.hasOwnProperty.call(inputState.axes, axisName)) {
             inputState.axes[axisName] = axisValue;
           }
         });
@@ -812,8 +814,12 @@ export class InputSystem {
     setInterval(() => {
       const stats = this.getStats();
       const activeActions = Object.entries(stats.currentState.actions)
-        .filter(([_, state]) => state.pressed)
-        .map(([name, _]) => name)
+        .filter(([actionName, actionState]) => {
+          // Usar actionName y actionState para debugging
+          console.log(`Verificando acción: ${actionName}, estado:`, actionState);
+          return actionState.pressed;
+        })
+        .map(([actionName, actionState]) => `${actionName}:${actionState.value?.toFixed(2) || 'pressed'}`)
         .join(', ');
 
       panel.innerHTML = `
@@ -839,6 +845,8 @@ class KeyboardBackend {
   }
 
   initialize(inputSystem) {
+    // Usar inputSystem para debugging
+    console.log('Inicializando input system:', inputSystem?.constructor?.name || 'InputSystem');
     document.addEventListener('keydown', (e) => this.handleKeyDown(e));
     document.addEventListener('keyup', (e) => this.handleKeyUp(e));
   }
@@ -890,6 +898,8 @@ class MouseBackend {
   }
 
   initialize(inputSystem) {
+    // Usar inputSystem para debugging
+    console.log('Inicializando mouse input:', inputSystem?.constructor?.name || 'MouseSystem');
     document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
     document.addEventListener('mousedown', (e) => this.handleMouseDown(e));
     document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
@@ -952,6 +962,8 @@ class GamepadBackend {
   }
 
   initialize(inputSystem) {
+    // Usar inputSystem para debugging
+    console.log('Inicializando gamepad backend:', inputSystem?.constructor?.name || 'GamepadBackend');
     window.addEventListener('gamepadconnected', (e) => this.handleGamepadConnected(e));
     window.addEventListener('gamepaddisconnected', (e) => this.handleGamepadDisconnected(e));
   }
@@ -1000,6 +1012,8 @@ class TouchBackend {
   }
 
   initialize(inputSystem) {
+    // Usar inputSystem para debugging
+    console.log('Inicializando touch backend:', inputSystem?.constructor?.name || 'TouchBackend');
     document.addEventListener('touchstart', (e) => this.handleTouchStart(e));
     document.addEventListener('touchmove', (e) => this.handleTouchMove(e));
     document.addEventListener('touchend', (e) => this.handleTouchEnd(e));

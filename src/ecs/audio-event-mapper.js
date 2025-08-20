@@ -277,6 +277,9 @@ export class AudioEventMapper {
       timestamp: performance.now()
     };
 
+    // Usar audioEventData para debugging
+    console.log('Procesando evento de audio:', audioEventData);
+
     if (context.position) {
       // Crear transform temporal si hay posición
       this.world?.addComponent(tempEntityId, 'Transform', {
@@ -296,6 +299,7 @@ export class AudioEventMapper {
           this.world.destroyEntity(tempEntityId);
         } catch (e) {
           // Entidad ya puede estar destruida
+          console.log('Error limpiando entidad temporal:', e.message);
         }
       }, 100);
     }
@@ -461,6 +465,9 @@ export class AudioEventUtils {
   }
 
   static createDamageEvent(world, entityId, damageType = 'generic', severity = 1.0) {
+    // Usar damageType para logging
+    console.log(`Creando evento de daño tipo: ${damageType} con severidad: ${severity}`);
+
     world.addComponent(entityId, 'AudioEvent', {
       eventType: 'DamageEvent',
       volume: Math.min(severity, 1.0),

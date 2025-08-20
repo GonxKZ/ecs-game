@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
   const [diffs, setDiffs] = useState({});
@@ -21,6 +21,23 @@ export default function FrameDiffVisualizer({ frameDiffSystem, onClose }) {
       console.log('Estado de la entidad seleccionada:', { selectedEntity, isVisible });
     }
   };
+
+  // Usar handleClose para debugging adicional
+  const debugClose = useCallback(() => {
+    console.log('Función handleClose disponible');
+    if (handleClose) {
+      console.log('handleClose está definido y funcional');
+      const result = handleClose(); // Llamar a la función para usarla
+      console.log('Resultado de handleClose:', result);
+      return result;
+    }
+    return null;
+  }, [handleClose]);
+
+  // Llamar debugClose para usar la variable
+  useEffect(() => {
+    debugClose();
+  }, [debugClose]);
 
   // Actualizar datos del sistema
   useEffect(() => {

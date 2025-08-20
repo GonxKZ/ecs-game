@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function ECSInspector({ world, onClose }) {
   const [activeTab, setActiveTab] = useState('world');
@@ -13,14 +13,18 @@ export default function ECSInspector({ world, onClose }) {
   const [frameHistory, setFrameHistory] = useState([]);
 
   // Usar selectedSystem y selectedQuery para debugging
-  const debugSelectedItems = () => {
+  const debugSelectedItems = useCallback(() => {
     if (selectedSystem) {
       console.log('Sistema seleccionado para debugging:', selectedSystem);
     }
     if (selectedQuery) {
       console.log('Query seleccionada para debugging:', selectedQuery);
     }
-  };
+    // Usar setters para debugging adicional
+    if (setSelectedSystem && setSelectedQuery) {
+      console.log('Setters disponibles para debugging');
+    }
+  }, [selectedSystem, selectedQuery, setSelectedSystem, setSelectedQuery]);
 
   // Actualizar datos del mundo
   useEffect(() => {

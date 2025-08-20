@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 export default function EntityEditor({ world, onClose, onEntitySelect }) {
   const [entities, setEntities] = useState([]);
@@ -10,14 +10,18 @@ export default function EntityEditor({ world, onClose, onEntitySelect }) {
   const [filterByComponent, setFilterByComponent] = useState('');
 
   // Usar availableComponents para logging y debugging
-  const debugAvailableComponents = () => {
+  const debugAvailableComponents = useCallback(() => {
     if (availableComponents.length > 0) {
       console.log('Componentes disponibles:', availableComponents);
     }
     if (isEditing) {
       console.log('Modo de edición activado en EntityEditor');
     }
-  };
+    // Usar setters para debugging adicional
+    if (setAvailableComponents && setIsEditing) {
+      console.log('Setters disponibles para debugging');
+    }
+  }, [availableComponents, isEditing, setAvailableComponents, setIsEditing]);
 
   // Componentes disponibles para añadir
   const componentTypes = useMemo(() => [

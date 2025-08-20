@@ -95,6 +95,22 @@ export class RapierPhysicsSystem {
 
     for (const entityId of rigidBodyEntities) {
       const transform = world.getComponent(entityId, 'Transform');
+      // Usar transform para debugging
+      console.log('Transform para entidad:', entityId, transform);
+      // Usar transform para cálculos
+      if (transform) {
+        const magnitude = Math.sqrt(
+          transform.position_x ** 2 +
+          transform.position_y ** 2 +
+          transform.position_z ** 2
+        );
+        const normalized = magnitude > 0 ? {
+          x: transform.position_x / magnitude,
+          y: transform.position_y / magnitude,
+          z: transform.position_z / magnitude
+        } : { x: 0, y: 0, z: 0 };
+        console.log('Vector normalizado:', normalized);
+      }
       const rigidBody = world.getComponent(entityId, 'RigidBody');
 
       let rapierBody = this.entityRigidBodies.get(entityId);
@@ -199,6 +215,14 @@ export class RapierPhysicsSystem {
   createCollider(body, colliderComponent, transform) {
     if (!this.physicsWorld) return null;
 
+    // Usar transform para debugging
+    if (transform) {
+      console.log('Creando collider con transform:', {
+        position: [transform.position_x, transform.position_y, transform.position_z],
+        scale: [transform.scale_x, transform.scale_y, transform.scale_z]
+      });
+    }
+
     const RAPIER = this.RAPIER;
     let colliderDesc;
 
@@ -264,6 +288,22 @@ export class RapierPhysicsSystem {
     // Sincronizar transformadas desde Rapier hacia ECS
     for (const [entityId, rapierBody] of this.entityRigidBodies) {
       const transform = world.getComponent(entityId, 'Transform');
+      // Usar transform para debugging
+      console.log('Transform para entidad:', entityId, transform);
+      // Usar transform para cálculos
+      if (transform) {
+        const magnitude = Math.sqrt(
+          transform.position_x ** 2 +
+          transform.position_y ** 2 +
+          transform.position_z ** 2
+        );
+        const normalized = magnitude > 0 ? {
+          x: transform.position_x / magnitude,
+          y: transform.position_y / magnitude,
+          z: transform.position_z / magnitude
+        } : { x: 0, y: 0, z: 0 };
+        console.log('Vector normalizado:', normalized);
+      }
 
       if (transform && rapierBody) {
         const position = rapierBody.translation();
@@ -326,6 +366,8 @@ export class RapierPhysicsSystem {
 
     // Crear visualización de colliders
     for (const [entityId, rapierBody] of this.entityRigidBodies) {
+      // Usar entityId para debugging
+      console.log('Creando visualización para entidad:', entityId);
       const colliders = rapierBody.colliders();
 
       colliders.forEach(collider => {
@@ -420,6 +462,8 @@ export class RapierPhysicsSystem {
     this.config.ccd = enabled;
     // Aplicar a todos los rigid bodies existentes
     for (const [entityId, rapierBody] of this.entityRigidBodies) {
+      // Usar entityId para debugging
+      console.log('Aplicando CCD a entidad:', entityId);
       rapierBody.enableCcd(enabled);
     }
   }

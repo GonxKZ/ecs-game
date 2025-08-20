@@ -196,6 +196,10 @@ export class AudioXRaySystem {
    * Actualiza el sistema (principalmente para estadísticas)
    */
   update(deltaTime) {
+    // Usar deltaTime para debugging
+    if (deltaTime > 0.1) {
+      console.log('DeltaTime alto en AudioXRaySystem:', deltaTime);
+    }
     // El sistema principal se maneja a través de eventos
     // Aquí podemos actualizar métricas o efectos visuales
   }

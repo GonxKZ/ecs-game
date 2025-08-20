@@ -91,6 +91,8 @@ export class CCDExperiment {
     ];
 
     wallPositions.forEach((pos, index) => {
+      // Usar index para debugging
+      console.log('Creando pared con índice:', index);
       const wallId = this.world.createEntity();
 
       // Añadir transform

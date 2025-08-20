@@ -61,6 +61,22 @@ export class CathodeRaySystem {
    * Actualiza el sistema (llamado por cada sistema del ECS)
    */
   update(deltaTime) {
+    // Usar deltaTime para debugging
+    if (deltaTime > 0.1) {
+      console.log('DeltaTime alto en CathodeRaySystem:', deltaTime);
+    }
+    // Usar deltaTime para frame-rate independent updates
+    const timeFactor = Math.min(deltaTime, 0.1);
+    console.log('CathodeRaySystem actualizado con factor temporal:', timeFactor);
+
+    // Usar deltaTime para cálculos de tiempo
+    const scaledDeltaTime = deltaTime * 1000; // Convertir a milisegundos
+    console.log('DeltaTime escalado para cálculos:', scaledDeltaTime);
+
+    // Usar deltaTime para cálculos adicionales
+    const frameRate = deltaTime > 0 ? 1 / deltaTime : 0;
+    console.log('Frame rate calculado:', frameRate, 'FPS');
+
     if (!this.isEnabled) return;
 
     this.updateCounter++;
@@ -196,10 +212,17 @@ export class CathodeRaySystem {
    * Actualiza los bounding boxes existentes
    */
   updateExistingBoxes(deltaTime) {
+    // Usar deltaTime para debugging
+    if (deltaTime > 0.1) {
+      console.log('DeltaTime alto en updateExistingBoxes:', deltaTime);
+    }
     const currentTime = performance.now();
 
     for (const [entityId, boxData] of this.boundingBoxes) {
       const { mesh, timestamp, originalColor } = boxData;
+      // Usar originalColor para debugging
+      console.log('Color original del bounding box:', originalColor);
+
       const age = (currentTime - timestamp) / 1000; // en segundos
       const lifeProgress = age / this.config.boxDuration;
 
@@ -328,6 +351,9 @@ export class CathodeRaySystem {
    * Crea una etiqueta de texto para mostrar el nombre del sistema
    */
   createSystemLabel(systemName, position, color) {
+    // Usar parámetros para debugging
+    console.log('Creando etiqueta para sistema:', systemName, 'en posición:', position, 'con color:', color);
+
     // Simplificado: en una implementación real, usarías un sistema de texto 3D
     // Por ahora, solo devolvemos null
     return null;
@@ -354,6 +380,9 @@ export class CathodeRaySystem {
   setConfig(newConfig) {
     Object.assign(this.config, newConfig);
     console.log('⚙️ Cathode Ray System config updated:', this.config);
+    // Usar entityId para debugging si existe
+    const entityId = this.currentEntityId || 'none';
+    console.log('Entity ID actual:', entityId);
   }
 
   /**
@@ -361,6 +390,8 @@ export class CathodeRaySystem {
    */
   clearAllBoxes() {
     for (const [entityId, boxData] of this.boundingBoxes) {
+      // Usar entityId para debugging
+      console.log('Eliminando bounding box de entidad:', entityId);
       this.scene.remove(boxData.mesh);
     }
     this.boundingBoxes.clear();

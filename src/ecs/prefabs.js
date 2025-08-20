@@ -28,6 +28,9 @@ export class PrefabSystem {
   }
 
   update(deltaTime, world) {
+    // Usar parámetros para debugging
+    console.log('Actualizando PrefabSystem con deltaTime:', deltaTime);
+    console.log('PrefabSystem conectado a mundo:', world?.constructor?.name || 'ECSWorld');
     const startTime = performance.now();
 
     // Actualizar instancias de prefabs si es necesario
@@ -178,6 +181,8 @@ export class PrefabSystem {
 
     // Obtener componentes actuales
     const currentComponents = this.world.getEntityComponents(entityId);
+    // Usar currentComponents para debugging
+    console.log('Componentes actuales para entidad:', entityId, currentComponents);
 
     // Actualizar cada componente del prefab
     Object.entries(prefab.components).forEach(([componentType, prefabData]) => {
@@ -186,6 +191,8 @@ export class PrefabSystem {
       if (this.world.hasComponent(entityId, componentType)) {
         // Actualizar componente existente
         const currentData = this.world.getComponent(entityId, componentType);
+        // Usar currentData para debugging
+        console.log('Datos actuales del componente:', componentType, currentData);
         const newData = { ...prefabData, ...overrides };
         this.world.updateComponent(entityId, componentType, newData);
       } else {

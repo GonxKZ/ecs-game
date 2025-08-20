@@ -228,24 +228,7 @@ export class ECSWorld {
     this.queries.clear();
   }
 
-  /**
-   * Registra un sistema (método legacy - usa el nuevo con dependencias)
-   */
-  registerSystem(name, system, dependencies = []) {
-    this.systems.set(name, system);
 
-    // Usar el scheduler si está disponible
-    if (this.scheduler) {
-      this.scheduler.registerSystem(name, system, dependencies);
-    }
-
-    // Integrar con el sistema de eventos si es necesario
-    if (name === 'Event' && this.eventBus) {
-      system.eventBus = this.eventBus;
-    }
-
-    console.log(`⚙️ Sistema ${name} registrado${dependencies.length ? ` con dependencias: ${dependencies.join(', ')}` : ''}`);
-  }
 
   /**
    * Ejecuta todos los sistemas usando el scheduler profesional
