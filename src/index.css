@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importar estilos personalizados */
+@import './styles/GameStyles.css';
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: #e2e8f0;
+  background-color: #0f172a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Componentes de Leva personalizados */
+.leva-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.leva-panel[data-theme="light"] {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Transiciones suaves para todo */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
