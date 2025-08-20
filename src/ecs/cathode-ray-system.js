@@ -291,18 +291,21 @@ export class CathodeRaySystem {
     const baseSize = 1.0;
 
     switch (renderMesh.geometryType) {
-      case 'sphere':
+      case 'sphere': {
         const radius = renderMesh.radius || baseSize;
         return new THREE.Vector3(radius * 2, radius * 2, radius * 2);
-      case 'cube':
+      }
+      case 'cube': {
         const width = renderMesh.width || baseSize;
         const height = renderMesh.height || baseSize;
         const depth = renderMesh.depth || baseSize;
         return new THREE.Vector3(width, height, depth);
-      case 'cylinder':
+      }
+      case 'cylinder': {
         const cylRadius = renderMesh.radius || baseSize;
         const cylHeight = renderMesh.height || baseSize;
         return new THREE.Vector3(cylRadius * 2, cylHeight, cylRadius * 2);
+      }
       default:
         return new THREE.Vector3(baseSize, baseSize, baseSize);
     }

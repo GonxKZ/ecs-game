@@ -9,6 +9,25 @@ export default function InputOverlay({ inputSystem, onClose, style = 'modern' })
   const [isVisible, setIsVisible] = useState(true);
   const [opacity, setOpacity] = useState(0.8);
 
+  // Usar style para configuración de apariencia
+  const getStyleConfig = () => {
+    return style === 'modern' ? {
+      background: 'rgba(0, 0, 0, 0.8)',
+      border: '1px solid rgba(0, 255, 136, 0.3)',
+      fontSize: '12px'
+    } : {
+      background: 'rgba(50, 50, 50, 0.9)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      fontSize: '11px'
+    };
+  };
+
+  // Usar onClose para funcionalidad de cierre
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) onClose();
+  };
+
   // Actualizar estado del input
   useEffect(() => {
     if (!inputSystem) return;

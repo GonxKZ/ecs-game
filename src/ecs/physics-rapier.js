@@ -354,15 +354,17 @@ export class RapierPhysicsSystem {
     const shapeType = collider.shape.type;
 
     switch (shapeType) {
-      case 0: // Ball
+      case 0: { // Ball
         const radius = collider.shape.radius;
         mesh.scale.set(radius * 2, radius * 2, radius * 2);
         break;
+      }
 
-      case 1: // Cuboid
+      case 1: { // Cuboid
         const halfExtents = collider.shape.halfExtents;
         mesh.scale.set(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
         break;
+      }
 
       default:
         mesh.scale.set(0.1, 0.1, 0.1);

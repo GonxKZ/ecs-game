@@ -147,12 +147,13 @@ export class PhysicsDebugSystem {
     const shapeType = collider.shape.type;
 
     switch (shapeType) {
-      case RAPIER.ShapeType.Ball:
+      case RAPIER.ShapeType.Ball: {
         const radius = collider.shape.radius;
         geometry = new THREE.SphereGeometry(radius, 8, 6);
         break;
+      }
 
-      case RAPIER.ShapeType.Cuboid:
+      case RAPIER.ShapeType.Cuboid: {
         const halfExtents = collider.shape.halfExtents;
         geometry = new THREE.BoxGeometry(
           halfExtents.x * 2,
@@ -160,14 +161,16 @@ export class PhysicsDebugSystem {
           halfExtents.z * 2
         );
         break;
+      }
 
-      case RAPIER.ShapeType.Cylinder:
+      case RAPIER.ShapeType.Cylinder: {
         const cylinderRadius = collider.shape.radius;
         const cylinderHeight = collider.shape.halfHeight * 2;
         geometry = new THREE.CylinderGeometry(cylinderRadius, cylinderRadius, cylinderHeight, 8);
         break;
+      }
 
-      case RAPIER.ShapeType.Capsule:
+      case RAPIER.ShapeType.Capsule: {
         const capsuleRadius = collider.shape.radius;
         const capsuleHeight = collider.shape.halfHeight * 2;
         // Crear geometría de cápsula aproximada

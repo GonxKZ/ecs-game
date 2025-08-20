@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Resource Manager para ECS
  * Gestiona recursos como texturas, modelos, sonidos con caching inteligente y purga automática
@@ -521,7 +523,6 @@ export class ResourceManager {
         return 1;
       case Uint16Array:
       case Int16Array:
-      case Uint16Array:
         return 2;
       case Uint32Array:
       case Int32Array:

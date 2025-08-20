@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Audio WebAudio con Espacialización 3D para ECS
  * Proporciona mezcla por buses, atenuación espacial y gestión avanzada de audio
