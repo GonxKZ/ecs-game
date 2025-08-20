@@ -177,10 +177,11 @@ export class PhysicsDebugSystem {
         geometry = new THREE.CapsuleGeometry(capsuleRadius, capsuleHeight, 4, 8);
         break;
 
-      default:
+      default: {
         // Geometría por defecto
         geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
         break;
+      }
     }
 
     if (geometry) {
