@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Physics Debug Visualization System
  * Visualiza colisionadores, normales de contacto, raycasts y otros elementos de debug físico
@@ -19,6 +21,13 @@ export class PhysicsDebugSystem {
       boundingBoxes: new Map(),
       velocityVectors: new Map(),
       forceVectors: new Map()
+    };
+
+    // Información de debug
+    this.debugInfo = {
+      entityCount: 0,
+      totalColliders: 0,
+      visibleColliders: 0
     };
 
     // Configuración de visualización
@@ -104,6 +113,10 @@ export class PhysicsDebugSystem {
 
   updateColliderVisualization(world) {
     // Visualizar todos los colisionadores
+    // Usar world para obtener información adicional de las entidades si es necesario
+    const entityCount = world.entities.size;
+    this.debugInfo.entityCount = entityCount;
+
     for (const [entityId, rapierBody] of this.physicsSystem.entityRigidBodies) {
       const colliders = rapierBody.colliders();
 

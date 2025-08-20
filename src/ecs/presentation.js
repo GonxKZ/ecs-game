@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 /**
  * Sistema de Presentación ECS
  * Mapea componentes ECS puros a objetos Three.js sin que el ECS sepa de Three.js
@@ -362,7 +364,9 @@ export class PresentationSystem {
     for (const entityId of particleEntities) {
       // Implementación de partículas simplificada
       // En un motor real, esto usaría THREE.Points o un sistema de partículas
+      // Usar deltaTime para actualizar sistemas de partículas de forma frame-rate independiente
       const entityObject = this.entityObjects.get(entityId);
+      const particleSystem = world.getComponent(entityId, 'ParticleSystem');
 
       if (entityObject && entityObject.particleSystem) {
         // Actualizar sistema de partículas
