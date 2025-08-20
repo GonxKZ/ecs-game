@@ -119,7 +119,7 @@ export const ComponentDefinitions = {
   },
 
   // Componente de animación (datos puros)
-  Animation: {
+  AnimationState: {
     animationName: 'string',
     isPlaying: 'boolean',
     loop: 'boolean',
